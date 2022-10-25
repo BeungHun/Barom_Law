@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.br.law.mapper.user.TrialUserMapper">
+
+	<!-- <select id="login" resultType="com.br.law.vo.User">
+		SELECT * FROM tb_001 WHERE user_id = #{user_id} AND user_password = #{user_password}
+	 </select>-->
+	
+	<select id="login" resultType="com.br.law.vo.Tb_001">
+		SELECT * FROM tb_001 WHERE  user_id= #{user_id} AND user_pw=#{user_pw}
+	</select>
+	
+	<select id="example" resultType="com.br.law.vo.Tb_001">
+		SELECT * FROM tb_001 WHERE user_id = 'user' AND user_pw= 'user'
+	</select>
+	
+	<select id="seluser" resultType="com.br.law.vo.Tb_001">
+		select * from tb_001 
+	</select>
+
+	<select id="selectMyInfo" resultType="com.br.law.vo.Tb_001">
+		select * from tb_001 where user_proper_num = #{user_proper_num}
+	</select>
+	
+	<!-- 회원정보 수정 -->
+	<update id="modifyMyInfo">
+		UPDATE TB_001 SET
+			<if test="user_email != null and user_email != ''">
+				USER_EMAIL = #{user_email, jdbcType=VARCHAR},
+			</if>
+			<if test="user_phone != null and user_email != ''">
+				USER_PHONE = #{user_phone, jdbcType=VARCHAR},
+			</if>
+			<if test="user_job != null and user_job != ''">
+				USER_JOB = #{user_job, jdbcType=VARCHAR},
+			</if>
+			<if test="user_ar != null and user_ar != ''">
+				USER_AR = #{user_ar, jdbcType=VARCHAR},
+			</if>
+			<if test="user_ar_zonecode != null and user_ar_zonecode != ''">
+				USER_AR_ZONECODE = #{user_ar_zonecode, jdbcType=VARCHAR},
+			</if>
+			<if test="user_ar_jibun != null and user_ar_jibun != ''">
+				USER_AR_JIBUN = #{user_ar_jibun, jdbcType=VARCHAR},
+			</if>
+			<if test="user_ar_detail != null and user_ar_detail != ''">
+				USER_AR_DETAIL = #{user_ar_detail, jdbcType=VARCHAR},
+			</if>
+			<if test="user_bank != null and user_bank != ''">
+				USER_BANK = #{user_bank, jdbcType=VARCHAR},
+			</if>
+			<if test="user_bank_account != null and user_bank_account != ''">
+				USER_BANK_ACCOUNT = #{user_bank_account, jdbcType=VARCHAR},
+			</if>
+			<if test="user_bank_holder != null and user_bank_holder != ''">
+				USER_BANK_HOLDER = #{user_bank_holder, jdbcType=VARCHAR}
+			</if>
+		WHERE USER_PROPER_NUM = #{user_proper_num}
+	</update>
+
+	<!-- 비밀번호 변경 -->
+	<update id="modifyPassword">
+		UPDATE TB_001 SET
+			USER_PW = #{new_pw}
+		WHERE USER_PROPER_NUM = #{user_proper_num}
+	</update>
+	
+	<!-- 회원탈퇴 -->
+	<update id="withdrawal">
+		UPDATE TB_001 SET
+			USER_DELETE_YN = 'Y'
+		WHERE USER_PROPER_NUM = #{user_proper_num}
+	</update>
+	
+	<!-- 나의 등재신청 내역 전체 간단정보 리스트 검색 -->
+	<select id="selectMyApplicationList" resultType="map">
+		SELECT ROWNUM, a.* FROM
+			(SELECT 
+				t1.USER_PROPER_NUM,
+				t2.ANNOUNCE_PROPER_NUM,
+				t5.APLCN_DTLS_PROPER_NUM,
+				t5.COURT_PROPER_NUM ,
+				t5.APLCN_DTLS_STS ,
+				t5.APLCN_DTLS_DATE ,
+				t10.TRIAL_FCLTT_DESCRIPTION ,
+				t11.COURT_NAME 
+			FROM tb_001 t1, TB_002 t2, tb_005 t5, tb_010 t10, tb_011 t11
+			WHERE t1.USER_PROPER_NUM = t5.USER_PROPER_NUM 
+			AND t5.ANNOUNCE_PROPER_NUM = t2.ANNOUNCE_PROPER_NUM 
+			AND t2.TRIAL_FCLTT_PROPER_NUM = t10.TRIAL_FCLTT_PROPER_NUM 
+			AND t5.COURT_PROPER_NUM = t11.COURT_PROPER_NUM
+			AND t1.USER_PROPER_NUM = #{user_proper_num}
+			ORDER BY t5.APLCN_DTLS_DATE DESC) a
+	</select>
+	
+	<!-- 나의 등재신청 내역 상세보기 -->
+	<select id="selectMyApplication" resultType="map">
+		SELECT * FROM tb_001 t1, TB_002 t2, tb_005 t5, tb_010 t10, tb_011 t11
+		WHERE t1.USER_PROPER_NUM = t5.USER_PROPER_NUM 
+		AND t5.ANNOUNCE_PROPER_NUM = t2.ANNOUNCE_PROPER_NUM 
+		AND t2.TRIAL_FCLTT_PROPER_NUM = t10.TRIAL_FCLTT_PROPER_NUM 
+		AND t5.COURT_PROPER_NUM = t11.COURT_PROPER_NUM
+		AND t5.APLCN_DTLS_PROPER_NUM = #{aplcn_dtls_proper_num}
+	</select>
+	
+	<!-- 등재신청 상태 변경 -->
+	<update id="updateApplicationStatus">
+		UPDATE TB_005 SET
+			APLCN_DTLS_STS = #{aplcn_dtls_sts}
+		WHERE APLCN_DTLS_PROPER_NUM = #{aplcn_dtls_proper_num}
+	</update>
+	
+	<!-- 등재신청 신청상세 수정 -->
+	<update id="modifyTableFive">
+		UPDATE TB_005 SET
+			LIGTN_CASE_CARER_YN = #{ligtn_case_carer_yn}
+			, INSRN_INDST_CARER_YN = #{insrn_indst_carer_yn}
+			, CRIMINAL_PENALTY_CARER_YN = #{criminal_penalty_carer_yn}
+			, LIGTN_CASE_CARER_ETC = #{ligtn_case_carer_etc}
+			, INSRN_INDST_CARER_ETC = #{insrn_indst_carer_etc}
+			, CRIMINAL_PENALTY_CARER_ETC = #{criminal_penalty_carer_etc}
+		WHERE APLCN_DTLS_PROPER_NUM = #{aplcn_dtls_proper_num}
+	</update>
+	
+	<!-- 등재신청 학력정보 수정 -->
+	<update id="modifyTableSix">
+		UPDATE TB_006 SET
+			EDCTN_SCHOOL_NAME = #{edctn_school_name}
+			, EDCTN_MAJOR = #{edctn_major}
+			, EDCTN_DEGREE = #{edctn_degree}
+			, EDCTN_ADMSN_DATE = #{edctn_admsn_date}
+			, EDCTN_GRDTN_DATE = #{edctn_grdtn_date}
+			, EDCTN_FINAL_YN = #{edctn_final_yn}
+		WHERE APLCN_DTLS_PROPER_NUM = #{aplcn_dtls_proper_num}
+	</update>
+	
+	<!-- 등재신청 경력정보 수정 -->
+	<update id="modifyTableSeven">
+		UPDATE TB_007 SET
+			COMPANY_NAME = #{company_name}
+			, CARER_TYPE = #{carer_type}
+			, WORK_START_DATE = #{work_start_date}
+			, WORK_END_DATE = #{work_end_date}
+			, WORK_DESCRIPTION = #{work_description}
+			, WORK_DEPARTMENT = #{work_department}
+			, WORK_POSITION = #{work_position}
+			, CARER_DESCRIPTION = #{carer_description}
+			, SPECIAL_NOTE_DESCRIPTION = #{special_note_description}
+		WHERE APLCN_DTLS_PROPER_NUM = #{aplcn_dtls_proper_num}
+	</update>
+	
+	<!-- 등재신청 자격증정보 수정 -->
+	<update id="modifyTableEight">
+		UPDATE TB_008 SET
+			CRTFC_TYPE = #{crtfc_type}
+			, ISSUE_AGENCY = #{issue_agency}
+			, CRTFC_NUMBER = #{crtfc_number}
+			, ISSUE_DATE = #{issue_date}
+		WHERE APLCN_DTLS_PROPER_NUM = #{aplcn_dtls_proper_num}
+	</update>
+	
+	<!-- 등재신청 첨부파일정보 수정 -->
+	<update id="modifyTableNine">
+		UPDATE TB_009 SET
+			FILE_CODE = #{file_code}
+			, FILE_TYPE = #{file_type}
+			, ORIGINAL_FILE_NAME = #{original_file_name}
+			, FILE_PATH = #{file_path}
+		WHERE APLCN_ATCH_FILE_PROPER_NUM = #{aplcn_atch_file_proper_num}
+	</update>
+	
+	<!-- 등재신청번호 & 서류타입으로 나의 등재신청 첨부파일 정보 조회 -->
+	<select id="selectTableNineByAplcnNoAndFileType" resultType="com.br.law.vo.Tb_009">
+		SELECT * FROM TB_009
+		WHERE APLCN_DTLS_PROPER_NUM = #{aplcn_dtls_proper_num}
+		AND FILE_TYPE = #{file_type}
+	</select>
+	
+	<!-- 나의 활동내역 리스트 -->
+	<select id="selectMyActiveList" resultType="map">
+		SELECT ROWNUM, a.* FROM
+			(SELECT 
+				t11.COURT_NAME, t12.CHOSEN_DATE, t12.ATTENDANCE_DATE, t12.ACT_COMPLETE_YN 
+			FROM TB_011 t11, TB_012 t12 
+			WHERE t11.COURT_PROPER_NUM = t12.COURT_proper_num AND t12.user_proper_num = #{user_proper_num}
+			ORDER BY t12.CHOSEN_DATE DESC) a
+	</select>
+	
+	<!-- 나의 등재(활동)리스트 -->
+	<select id="selectMyAcceptList" resultType="map">
+		SELECT ROWNUM, a.* FROM (
+			SELECT
+				t14.ACCEPT_PROPER_NUM,
+				t14.APLCN_DTLS_PROPER_NUM,
+				t14.USER_PROPER_NUM,
+				t10.TRIAL_FCLTT_CLASIFI_CODE,
+				t10.TRIAL_FCLTT_SBCLS_CODE,
+				t10.TRIAL_FCLTT_DESCRIPTION,
+				t11.COURT_NAME,
+				t14.ACCEPT_DATE,
+				t14.ACCEPT_ETC,
+				t14.ACCEPT_ACT_YN 
+			FROM TB_014 t14, TB_010 t10, TB_011 t11 WHERE 
+			t14.COURT_PROPER_NUM = t11.COURT_PROPER_NUM
+			AND t14.TRIAL_FCLTT_PROPER_NUM = t10.TRIAL_FCLTT_PROPER_NUM
+			AND t14.USER_PROPER_NUM = #{user_proper_num}
+			ORDER BY t14.ACCEPT_DATE DESC
+		) a
+	</select>
+	
+	<update id="updateAcceptActYn">
+		UPDATE TB_014 SET 
+		ACCEPT_ACT_YN = #{accept_act_yn}
+		WHERE ACCEPT_PROPER_NUM = #{accept_proper_num}
+	</update>
+	
+</mapper>
+

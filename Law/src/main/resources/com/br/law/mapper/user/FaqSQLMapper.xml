@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.br.law.mapper.user.FaqSQLMapper">
+	<insert id="insertFaq">
+		INSERT INTO TB_004 VALUES(
+			TB_004_seq.nextval,
+			#{faq_ask_content},
+			#{faq_ask_comment}
+		)
+	</insert>
+	
+	<update id="updateTitleAndContent">
+		UPDATE TB_004
+		SET faq_ask_content = #{faq_ask_content} ,
+		faq_ask_comment = #{faq_ask_comment}
+	</update>
+
+</mapper>

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.br.law.mapper.user.ApplicationRegistrationMapper">
+
+<!-- 여기는 다 insert로 등재신청 -->
+<insert id="userIns">
+INSERT INTO tb_001 values(
+	tb_001_seq.nextval,
+	#{user_id},
+	#{user_pw},
+	#{user_name},
+	#{user_age},
+	#{user_email},
+	#{user_phone},
+	#{user_job},
+	#{user_ar},
+	#{user_ar_zonecode},
+	#{user_ar_jibun},
+	#{user_ar_detail},
+	#{user_bank},
+	#{user_bank_account},
+	#{user_bank_holder},
+	sysdate,
+	'n'
+)
+</insert>
+<!--다시  -->
+<insert id="userDetailIns">
+	INSERT INTO tb_005 values(
+	tb_005_seq.nextval,
+	#{user_proper_num},
+	#{announce_proper_num},
+	#{trial_fcltt_proper_num},
+	#{court_proper_num},
+	#{ligtn_case_carer_yn},
+	#{ligtn_case_carer_etc},
+	#{insrn_indst_carer_yn},
+	#{insrn_indst_carer_etc},
+	#{criminal_penalty_carer_yn},
+	#{criminal_penalty_carer_etc},
+	'ing',
+	sysdate
+) 
+</insert>
+
+<update id="userDetailUp">
+	update Tb_005 set
+	court_proper_num = #{court_proper_num},
+	ligtn_case_carer_yn = #{ligtn_case_carer_yn},
+	ligtn_case_carer_etc = #{ligtn_case_carer_etc},
+	insrn_indst_carer_yn = #{insrn_indst_carer_yn},
+	insrn_indst_carer_etc =  #{insrn_indst_carer_etc},
+	criminal_penalty_carer_yn = #{criminal_penalty_carer_yn},
+	criminal_penalty_carer_etc = #{criminal_penalty_carer_etc},
+	aplcn_dtls_sts = 'ing',
+	aplcn_dtls_date = sysdate 
+	WHERE user_proper_num = #{user_proper_num}
+	and announce_proper_num = #{announce_proper_num}
+</update>
+
+
+
+<insert id="univIns">
+INSERT INTO tb_006 values(
+	tb_006_seq.nextval,
+	#{aplcn_dtls_proper_num},
+	#{edctn_school_name},
+	#{edctn_major},
+	#{edctn_degree},
+	#{edctn_admsn_date},
+	#{edctn_grdtn_date},
+	#{edctn_final_yn}
+	
+)
+</insert>
+<update id="univUp">
+	UPDATE tb_006 SET
+	edctn_school_name = #{edctn_school_name},
+	edctn_major = #{edctn_major},
+	edctn_degree = #{edctn_degree},
+	edctn_admsn_date = #{edctn_admsn_date},
+	edctn_grdtn_date = #{edctn_grdtn_date},
+	edctn_final_yn = #{edctn_final_yn} 
+	where aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+</update>
+
+<insert id="careerIns">
+	INSERT INTO tb_007 values(
+	tb_007_seq.nextval,
+	#{aplcn_dtls_proper_num},
+	#{company_name},
+	#{carer_type},
+	#{work_start_date},
+	#{work_end_date},
+	#{work_description},
+	#{work_department},
+	#{work_position},
+	#{carer_description},
+	#{special_note_description}
+)
+</insert>
+<update id="careerUp">
+	UPDATE tb_007 SET 
+	company_name = #{company_name},
+	carer_type = #{carer_type},
+	work_start_date = #{work_start_date},
+	work_end_date = #{work_end_date},
+	work_description = #{work_description},
+	work_department = #{work_department},
+	work_position = #{work_position},
+	carer_description = #{carer_description},
+	special_note_description = #{special_note_description}
+	WHERE aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+</update>
+
+<insert id="licenseIns">
+	INSERT INTO tb_008 values(
+	tb_008_seq.nextval,
+	#{aplcn_dtls_proper_num},
+	#{crtfc_type},
+	#{issue_agency},
+	#{crtfc_number},
+	#{issue_date}
+)
+</insert>
+<update id="licenseUp">
+	update tb_008 set 
+	crtfc_type = #{crtfc_type},
+	issue_agency = #{issue_agency},
+	crtfc_number = #{crtfc_number},
+	issue_date = #{issue_date}
+	where aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+</update>
+
+<insert id="uploadFilesIns">
+	INSERT INTO tb_009 values(
+	tb_009_seq.nextval,
+	#{aplcn_dtls_proper_num},
+	#{file_code},
+	#{file_type},
+	#{original_file_name},
+	#{file_path}
+)
+</insert>
+<select id ="userDetailSel" resultType="com.br.law.vo.Tb_005">
+	select * from tb_005 
+	where user_proper_num = #{user_proper_num} 
+	and announce_proper_num = #{announce_proper_num}
+</select>
+<select id ="userDetailCount" resultType="int">
+	select count(*) from tb_005 where user_proper_num = #{user_proper_num} and announce_proper_num = #{announce_proper_num}
+</select>
+
+<select id="univSel" resultType="com.br.law.vo.Tb_006">
+	select * from tb_006 where aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+</select>
+<select id="univCount" resultType="int">
+	select count(*) from Tb_006 where aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+</select>
+<select id="careerSel" resultType="com.br.law.vo.Tb_007">
+	select * from Tb_007 where aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+</select>
+<select id="careerCount" resultType="int">
+	select count(*) from Tb_007 where aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+</select>
+<select id="licenceSel" resultType="com.br.law.vo.Tb_008">
+	select * from Tb_008 where aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+</select>
+<select id="licenceCount" resultType="int">
+	select count(*) from Tb_008 where aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+</select>
+
+<update id="UserDetailExam">
+	UPDATE tb_005 SET aplcn_dtls_sts = 'examination' WHERE aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+</update>
+<select id="duplicate" resultType="int">
+	select count(*) from tb_001 t1, tb_005 t5 
+	where t1.user_proper_num = t5.user_proper_num 
+	and t5.announce_proper_num = #{announce_proper_num}
+	and t5.user_proper_num = #{user_proper_num}
+	and t5.aplcn_dtls_sts ='examination'
+</select>
+
+<select id="asd" resultType="com.br.law.vo.Tb_002">
+	select * from tb_002
+</select>
+
+<select id ="registerOverLabCheck" resultType="int">
+	select count(*) from tb_001 where user_id=#{user_id}
+</select>
+
+<!-- 22.09.27 임병훈 추가 : 현재 모집 중인 재판조력자 추출 -->
+<select id="chkTodayFcltt" resultType="com.br.law.vo.Tb_010">
+	SELECT t2.* FROM TB_002 t, TB_010 t2 
+	WHERE t.TRIAL_FCLTT_PROPER_NUM = t2.TRIAL_FCLTT_PROPER_NUM
+	AND t.ANNOUNCE_START_DATE <![CDATA[ <= ]]> SYSDATE 
+	AND SYSDATE <![CDATA[ <= ]]> t.ANNOUNCE_END_DATE
+</select>
+
+<!-- 22.09.27 임병훈 추가 : 재판조력자 코드들로 기한내 공고 찾기 -->
+<select id="selectVoByCodes" resultType="com.br.law.vo.Tb_010">
+	SELECT * FROM tb_010
+	WHERE TRIAL_FCLTT_CLASIFI_CODE = #{trial_fcltt_clasifi_code}
+	AND  TRIAL_FCLTT_SBCLS_CODE = #{trial_fcltt_sbcls_code}
+</select>
+
+<!-- 22.09.27 임병훈 추가 : 기한내 공고 중 TB_010으로 TB_002 찾기 -->
+<select id="selectVoByTb_010" resultType="com.br.law.vo.Tb_002">
+	SELECT t.* FROM TB_002 t, TB_010 t2 
+	WHERE t.TRIAL_FCLTT_PROPER_NUM = t2.TRIAL_FCLTT_PROPER_NUM
+	AND t.ANNOUNCE_START_DATE <![CDATA[ <= ]]> SYSDATE 
+	AND SYSDATE <![CDATA[ <= ]]> t.ANNOUNCE_END_DATE
+	AND t2.TRIAL_FCLTT_PROPER_NUM = #{trial_fcltt_proper_num}
+</select>
+
+</mapper>

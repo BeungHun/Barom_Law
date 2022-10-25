@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.br.law.mapper.admin.ApplicationRegistrationAdminMapper">
+	
+	
+<select id="selUserList" resultType="map">
+	select * from tb_005 t5, tb_002 t2, tb_010 t10 , tb_001 t1 , tb_014 t14
+	where t2.announce_proper_num = t5.announce_proper_num 
+	and t10.trial_fcltt_proper_num = t2.trial_fcltt_proper_num 
+	and t1.user_proper_num = t5.user_proper_num
+	AND t14.APLCN_DTLS_PROPER_NUM = t5.APLCN_DTLS_PROPER_NUM 
+	and t5.aplcn_dtls_sts = 'accept'
+</select>
+
+<!-- 신규 -->
+<select id="onestExamination" resultType="map">
+	SELECT * FROM tb_001 t1, tb_002 t2, tb_005 t5, tb_006 t6, tb_007 t7, tb_008 t8,  tb_010 t10, tb_011 t11
+	where t5.user_proper_num = t1.user_proper_num 
+	and t5.announce_proper_num = t2.announce_proper_num 
+	AND t5.APLCN_DTLS_PROPER_NUM = t6.APLCN_DTLS_PROPER_NUM 
+	AND t5.APLCN_DTLS_PROPER_NUM  = t7.APLCN_DTLS_PROPER_NUM 
+	AND t5.APLCN_DTLS_PROPER_NUM = t8.APLCN_DTLS_PROPER_NUM 
+	and t2.trial_fcltt_proper_num  = t10.trial_fcltt_proper_num 
+	and t5.court_proper_num  = t11.court_proper_num 
+	and t5.aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+</select>
+	
+	<update id="upComplete">
+		UPDATE tb_005 SET APLCN_DTLS_STS = 'accept' WHERE aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+	</update>
+	
+	<update id="upFail">
+		UPDATE tb_005 SET APLCN_DTLS_STS = 'failure' WHERE aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+	</update>
+	
+	<insert id="acceptIns">
+	INSERT INTO tb_014 values(
+	tb_014_seq.nextval,
+	#{aplcn_dtls_proper_num},
+	#{user_proper_num},
+	#{trial_fcltt_proper_num},
+	#{court_proper_num},
+	sysdate,
+	#{accept_etc},
+	'y'
+	)
+	</insert> 		
+	<select id="getFive" resultType="com.br.law.vo.Tb_005">
+		SELECT * FROM tb_005 where aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+	</select> 
+	
+	<select id="forComplete" resultType="map">
+	select * from tb_005 t5, tb_002 t2, tb_010 t10, tb_011 t11
+	where t5.announce_proper_num = t2.announce_proper_num 
+	and t2.trial_fcltt_proper_num = t10.trial_fcltt_proper_num 
+	and t11.court_proper_num = t5.court_proper_num 
+	and aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+	</select>
+	
+	<select id="uploadFileSel" resultType="com.br.law.vo.Tb_009">
+		select * from tb_009 where aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+	</select>
+	
+	<select id="noForUploadFileSel" resultType="com.br.law.vo.Tb_009">
+		select * from tb_009 where aplcn_atch_file_proper_num = #{aplcn_atch_file_proper_num}
+	</select>
+	
+	<select id="getUserNameAndPk" resultType="com.br.law.vo.Tb_001">
+		select * from tb_001 where user_proper_num = #{user_proper_num}
+	</select>
+	<select id="userDetailPk" resultType="int">
+		select user_proper_num from tb_005 where aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+	</select>
+	
+	<update id="companionUp">
+		UPDATE tb_005 SET aplcn_dtls_sts = 'companion' WHERE aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+	</update>
+	
+	<update id="evaluationCpUp">
+		UPDATE tb_005 SET aplcn_dtls_sts = 'evaluationCp' WHERE aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+	</update>
+	
+	<!-- 신청 반려 불러오기 -->
+	<select id="accList" resultType="map" >
+		SELECT * FROM tb_001 t1, tb_005 t5, tb_010 t10, tb_011 t11, tb_014 t14
+		WHERE t1.USER_PROPER_NUM  = t14.USER_PROPER_NUM 
+		AND t5.APLCN_DTLS_PROPER_NUM  = t14.APLCN_DTLS_PROPER_NUM 
+		AND t10.TRIAL_FCLTT_PROPER_NUM  = t14.TRIAL_FCLTT_PROPER_NUM 
+		AND t11.COURT_PROPER_NUM = t14.COURT_PROPER_NUM 
+		AND t5.APLCN_DTLS_STS = 'accept'
+	</select>
+	
+	<!-- optionBox 조건별 불러오기 -->
+	<select id="optionBoxapp" resultType="com.br.law.vo.Tb_010" >
+		SELECT * FROM TB_010 ORDER BY TRIAL_FCLTT_PROPER_NUM asc
+	</select>
+	
+	<!-- 22.10.04 신우진 추가 : 활동중인 명단 중 이름 검색 기능 -->
+	<select id="searchUserName" resultType="map">
+		select * from tb_005 t5, tb_002 t2, tb_010 t10 , tb_001 t1
+		where t2.announce_proper_num = t5.announce_proper_num 
+		and t10.trial_fcltt_proper_num = t2.trial_fcltt_proper_num 
+		and t1.user_proper_num = t5.user_proper_num
+		<if test="announce_proper_num !=null">
+			and t2.announce_proper_num=#{announce_proper_num}
+		</if>
+		<if test="aplcn_dtls_sts != null">
+			and t5.aplcn_dtls_sts = #{aplcn_dtls_sts}
+		</if>
+		<if test="trial_fcltt_proper_num != null">
+			and t10.trial_fcltt_proper_num=#{trial_fcltt_proper_num}
+		</if>
+		AND t1.user_name like '%'||#{user_name}||'%'
+	</select>
+	
+	
+	
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.br.law.mapper.admin.TrialAdminMapper">
+	
+	<select id="chkID" resultType="int">
+		SELECT count(*) FROM tb_015 WHERE admin_id =#{admin_id}
+	</select>
+	<select id="example" resultType="com.br.law.vo.Tb_015">
+		SELECT * FROM tb_015 WHERE admin_id = 'admin' AND admin_pw= 'admin'
+	</select>
+	<select id="login" resultType="com.br.law.vo.Tb_015">
+		SELECT * FROM tb_015 WHERE admin_id =#{admin_id} AND admin_pw=#{admin_pw}
+	</select>
+	<select id="selectByNo" resultType="com.br.law.vo.Tb_015">
+		SELECT * FROM tb_015 WHERE admin_proper_num = #{admin_proper_num}
+	</select>
+</mapper>

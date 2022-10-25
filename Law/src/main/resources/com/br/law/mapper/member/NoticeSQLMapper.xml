@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.br.law.mapper.member.NoticeSQLMapper">
+	<insert id="insertNoticeBoard">
+		INSERT INTO Tb_003 VALUES(
+		tb_003_seq.nextval,
+		#{admin_proper_num},
+		#{notice_title},
+		#{notice_content},
+		SYSDATE
+		)
+	</insert>
+	
+	<insert id="insertTrialAssistantRegisterBorad">
+		INSERT INTO Tb_002 VALUES(
+			Tb_002_seq.nextval,
+			#{admin_proper_num},
+			#{trial_fcltt_proper_num},
+			#{announce_title}, 
+			#{announce_content},
+			#{announce_start_date},
+			#{announce_end_date},
+			SYSDATE,
+			SYSDATE 
+			)
+	</insert>
+	
+	<select id="selectByAll" resultType="com.br.law.vo.Tb_003">
+		SELECT * FROM Tb_003 ORDER BY notice_proper_num DESC
+	</select>
+	
+	<select id="selectByAllRegisterBoard" resultType="com.br.law.vo.Tb_002">
+		SELECT * FROM Tb_002 ORDER BY announce_proper_num DESC
+	</select>
+	
+	
+	
+	<select id="selectNoticeByNo" resultType="com.br.law.vo.Tb_003">
+		SELECT *
+		FROM Tb_003
+		WHERE notice_proper_num = #{notice_proper_num}
+	</select>
+	
+	<select id="selectTrialAssistantByNo" resultType="com.br.law.vo.Tb_002">
+		SELECT *
+		FROM Tb_002
+		WHERE announce_proper_num = #{announce_proper_num}
+	</select>
+	
+	<select id="selectTb010VoByPk" resultType="com.br.law.vo.Tb_010">
+		SELECT * FROM Tb_010
+		WHERE trial_fcltt_proper_num = #{trial_fcltt_proper_num}
+	</select>
+	
+	<select id="selectAdminByNo" resultType="com.br.law.vo.Tb_015">
+		SELECT * 
+		FROM tb_015
+		WHERE admin_proper_num = #{admin_proper_num}
+	</select>
+		
+	<delete id="deleteMyNoticeByNo">
+		DELETE FROM Tb_003 WHERE notice_proper_num = #{notice_proper_num}
+	</delete>
+	
+	<delete id="deleteMytrialAssistantByNo">
+		DELETE FROM Tb_002 WHERE announce_proper_num = #{announce_proper_num} 
+	</delete>
+	
+	<select id="selectTrialFcltt" resultType="com.br.law.vo.Tb_010">
+		SELECT * FROM Tb_010
+	</select>
+	
+	<update id="updateNoitceData">
+		UPDATE Tb_003 
+		SET notice_title = #{notice_title} , notice_content = #{notice_content}
+		WHERE notice_proper_num = #{notice_proper_num}
+	</update>
+	
+	<update id="updateTrialAssistantData">
+		UPDATE Tb_002
+		SET trial_fcltt_proper_num = #{trial_fcltt_proper_num}, 
+		announce_title = #{announce_title}, 
+		announce_content = #{announce_content},
+		announce_start_date = #{announce_start_date},
+		announce_end_date = #{announce_end_date},
+		announce_last_date = SYSDATE
+		WHERE announce_proper_num = #{announce_proper_num}
+	</update>
+	
+
+	
+	
+
+	
+</mapper>

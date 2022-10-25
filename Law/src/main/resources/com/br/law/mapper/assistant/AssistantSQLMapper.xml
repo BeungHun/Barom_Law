@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.br.law.mapper.assistant.AssistantSQLMapper">
+		
+	<select id="ApplicantList" resultType="map">
+	
+		SELECT * FROM TB_001 t1,TB_002 t2,TB_005 t5,TB_010 t10
+		WHERE t1.USER_PROPER_NUM = t5.USER_PROPER_NUM 
+		AND t5.ANNOUNCE_PROPER_NUM = t2.ANNOUNCE_PROPER_NUM 
+		AND t5.TRIAL_FCLTT_PROPER_NUM = t10.TRIAL_FCLTT_PROPER_NUM 
+		ORDER BY t5.APLCN_DTLS_PROPER_NUM asc
+
+	</select>
+
+	
+	<select id="ApplicantDetails" resultType="map">
+		SELECT * FROM TB_001 t1,TB_002 t2,TB_005 t5, TB_006 t6,TB_007 t7, TB_010 t10, TB_011 t11
+		WHERE t1.USER_PROPER_NUM = t5.USER_PROPER_NUM 
+		AND t5.ANNOUNCE_PROPER_NUM = t2.ANNOUNCE_PROPER_NUM 
+		AND t5.TRIAL_FCLTT_PROPER_NUM = t10.TRIAL_FCLTT_PROPER_NUM 
+		AND t5.APLCN_DTLS_PROPER_NUM = t6.APLCN_DTLS_PROPER_NUM 
+		AND t5.APLCN_DTLS_PROPER_NUM = t7.APLCN_DTLS_PROPER_NUM 
+		AND t5.COURT_PROPER_NUM  = t11.COURT_PROPER_NUM 
+		AND t5.APLCN_DTLS_PROPER_NUM = #{aplcn_dtls_proper_num}
+		ORDER BY t5.APLCN_DTLS_PROPER_NUM asc
+	</select>
+	
+	<select id="certificate" resultType="map">
+		SELECT * FROM TB_008 WHERE aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+	</select>
+	
+	
+	<select id="uploadFile" resultType="map">
+		select * from tb_009 where aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+	</select>
+	
+	<select id="announce" resultType="map">
+		SELECT ANNOUNCE_TITLE FROM TB_002	
+	</select>
+	
+	<select id="TRIAL_FCLTT_NAME" resultType="map">
+		SELECT TRIAL_FCLTT_DESCRIPTION FROM TB_010
+	</select>
+	
+	<select id="announceSelect" resultType="map">
+	
+		SELECT * FROM TB_001 t1,TB_002 t2 ,TB_005 t5, TB_006 t6, TB_007 t7,TB_010 t10,TB_011 t11
+		WHERE   
+		t1.USER_PROPER_NUM = t5.USER_PROPER_NUM AND
+		t5.COURT_PROPER_NUM = t11.COURT_PROPER_NUM AND
+		t5.APLCN_DTLS_PROPER_NUM = t6.APLCN_DTLS_PROPER_NUM AND 
+		t6.APLCN_DTLS_PROPER_NUM = t7.APLCN_DTLS_PROPER_NUM AND
+		t10.TRIAL_FCLTT_PROPER_NUM = t2.TRIAL_FCLTT_PROPER_NUM AND
+		t2.ANNOUNCE_PROPER_NUM = #{announce_proper_num}
+		ORDER BY t5.APLCN_DTLS_PROPER_NUM DESC
+		
+	</select>
+	
+	
+	<select id="trialSelect">
+		SELECT * FROM TB_001 t1,TB_002 t2 ,TB_005 t5, TB_006 t6, TB_007 t7,TB_010 t10,TB_011 t11
+		WHERE   
+		t1.USER_PROPER_NUM = t5.USER_PROPER_NUM AND
+		t5.COURT_PROPER_NUM = t11.COURT_PROPER_NUM AND
+		t5.APLCN_DTLS_PROPER_NUM = t6.APLCN_DTLS_PROPER_NUM AND 
+		t6.APLCN_DTLS_PROPER_NUM = t7.APLCN_DTLS_PROPER_NUM AND
+		t10.TRIAL_FCLTT_PROPER_NUM = t2.TRIAL_FCLTT_PROPER_NUM AND 
+		t10.TRIAL_FCLTT_PROPER_NUM = #{TRIAL_FCLTT_PROPER_NUM}
+		ORDER BY t5.APLCN_DTLS_PROPER_NUM DESC
+	</select>
+	
+	<insert id="evaluationApplicants">
+		insert into TB_013 values(
+		TB_013_seq.nextval,
+		#{aplcn_dtls_proper_num},
+		#{admin_proper_num},
+		#{all_carrer_score},
+		#{jrsdc_carrer_score},
+		#{office_score},
+		#{personality_score},
+		#{interview_score},
+		#{certificate_score},
+		#{evaluate_score},
+		#{judge_recom_score},
+		#{review_etc}
+		)
+	</insert>
+	
+	<update id="accept">
+		UPDATE TB_005 SET APLCN_DTLS_STS = 'accept' WHERE APLCN_DTLS_PROPER_NUM = #{aplcn_dtls_proper_num}
+		AND
+		(SELECT sum(ALL_CARRER_SCORE+JRSDC_CARRER_SCORE+OFFICE_SCORE+PERSONALITY_SCORE+INTERVIEW_SCORE+CERTIFICATE_SCORE+EVALUATE_SCORE+JUDGE_RECOM_SCORE) FROM TB_013 t13
+		WHERE APLCN_DTLS_PROPER_NUM = #{aplcn_dtls_proper_num}) >= 40
+		
+	</update>
+	
+	<update id="referral">
+		UPDATE TB_005 SET APLCN_DTLS_STS = 'failure' WHERE APLCN_DTLS_PROPER_NUM = #{aplcn_dtls_proper_num}
+		AND
+		(SELECT sum(ALL_CARRER_SCORE+JRSDC_CARRER_SCORE+OFFICE_SCORE+PERSONALITY_SCORE+INTERVIEW_SCORE+CERTIFICATE_SCORE+EVALUATE_SCORE+JUDGE_RECOM_SCORE) FROM TB_013 t13
+		WHERE APLCN_DTLS_PROPER_NUM = #{aplcn_dtls_proper_num}) &lt; 40
+	</update>
+	
+	<!-- 220928 하다 조건별 불러오기 -->
+	<select id="callTb_010" resultType="com.br.law.vo.Tb_010" >
+		SELECT * FROM TB_010 ORDER BY TRIAL_FCLTT_PROPER_NUM asc
+	</select>
+	
+	<!-- 220928 하다 공고별 불러오기 -->
+	<select id="callTb_002" resultType="com.br.law.vo.Tb_002" >
+		SELECT * FROM TB_002 ORDER BY ANNOUNCE_PROPER_NUM asc
+	</select>
+	
+	<!-- 220928 하다 조건별 유저 불러오기 -->
+	<select id="callAUser" resultType="map" >
+		SELECT * FROM TB_001 t, TB_005 t2, TB_010 t3 , tb_002 t4
+		WHERE t.USER_PROPER_NUM = t2.USER_PROPER_NUM 
+		AND t2.TRIAL_FCLTT_PROPER_NUM = t3.TRIAL_FCLTT_PROPER_NUM
+		AND t4.ANNOUNCE_PROPER_NUM = t2.ANNOUNCE_PROPER_NUM 
+		AND t2.TRIAL_FCLTT_PROPER_NUM = #{trial_fcltt_proper_num}
+		ORDER BY t2.APLCN_DTLS_PROPER_NUM asc
+	</select>
+	
+	<!-- 220928 하다 공고별 유저 불러오기 -->
+	<select id="callCUser" resultType="map" >
+		SELECT * FROM TB_001 t, TB_002 t2, TB_005 t3, TB_010 t4 
+		WHERE t.USER_PROPER_NUM = t3.USER_PROPER_NUM
+		AND t2.ANNOUNCE_PROPER_NUM = t3.ANNOUNCE_PROPER_NUM
+		AND t3.TRIAL_FCLTT_PROPER_NUM = t4.TRIAL_FCLTT_PROPER_NUM
+		AND t2.ANNOUNCE_PROPER_NUM  = #{announce_proper_num}
+		ORDER BY t3.APLCN_DTLS_PROPER_NUM asc
+	</select>
+	
+	<!-- 220929 병훈 신청현황 별 유저 불러오기 -->
+	<select id="callDUser" resultType="map" >
+		SELECT * FROM TB_001 t, TB_002 t2, TB_005 t3, TB_010 t4 
+		WHERE t.USER_PROPER_NUM = t3.USER_PROPER_NUM
+		AND t2.ANNOUNCE_PROPER_NUM = t3.ANNOUNCE_PROPER_NUM
+		AND t3.TRIAL_FCLTT_PROPER_NUM = t4.TRIAL_FCLTT_PROPER_NUM
+		AND t3.aplcn_dtls_sts  = #{aplcn_dtls_sts}
+		ORDER BY t3.APLCN_DTLS_PROPER_NUM asc
+	</select>
+	
+	<!-- 0930 하다 최종점수 불러오기 -->
+	<select id="sumTb_013" resultType="int">
+		SELECT SUM(t13.ALL_CARRER_SCORE+t13.JRSDC_CARRER_SCORE+t13.OFFICE_SCORE+t13.PERSONALITY_SCORE+t13.INTERVIEW_SCORE+t13.CERTIFICATE_SCORE+t13.EVALUATE_SCORE+t13.JUDGE_RECOM_SCORE)  
+		FROM TB_013 t13
+		WHERE APLCN_DTLS_PROPER_NUM = #{aplcn_dtls_proper_num}
+	</select>
+	
+	<!-- 0930 하다 합격자 tb_014 인서트 -->
+	<insert id="insertTb_014">
+		INSERT INTO TB_014 values(
+			TB_014_seq.nextval,
+			#{aplcn_dtls_proper_num},
+			#{user_proper_num},
+			#{trial_fcltt_proper_num},
+			#{court_proper_num},
+			SYSDATE,
+			'',
+			'y'
+		)
+	</insert>
+	
+	<select id="callTb_005" resultType="com.br.law.vo.Tb_005">
+		select * from Tb_005 where aplcn_dtls_proper_num = #{aplcn_dtls_proper_num}
+	</select>
+	
+	<!-- 1006 병훈 법원테이블 리스트 출력 -->
+	<select id="callTb_011" resultType="com.br.law.vo.Tb_011" >
+		SELECT * FROM TB_011 ORDER BY COURT_PROPER_NUM asc
+	</select>
+	
+	<!-- 1006 병훈 등재된 유저정보 리스트 출력 -->
+	<select id="callRegistList" resultType="map">
+		SELECT table2.* FROM(
+			SELECT table1.*, ROWNUM as rnum FROM(
+				SELECT t1.USER_NAME, t1.USER_PHONE, t1.USER_EMAIL, t5.APLCN_DTLS_PROPER_NUM, 
+					t11.COURT_NAME, t10.TRIAL_FCLTT_DESCRIPTION, t14.ACCEPT_ACT_YN
+		 		FROM TB_001 t1,TB_005 t5,TB_010 t10,TB_011 t11, TB_014 t14
+				WHERE t1.USER_PROPER_NUM = t5.USER_PROPER_NUM 
+				AND t5.TRIAL_FCLTT_PROPER_NUM = t10.TRIAL_FCLTT_PROPER_NUM
+				AND t5.COURT_PROPER_NUM = t11.COURT_PROPER_NUM 
+				AND t5.APLCN_DTLS_PROPER_NUM = t14.APLCN_DTLS_PROPER_NUM
+				<if test="trial_fcltt_proper_num != 0">
+					AND t14.TRIAL_FCLTT_PROPER_NUM = #{trial_fcltt_proper_num}
+				</if>
+				<if test="court_proper_num != 0">
+					AND t14.COURT_PROPER_NUM = #{court_proper_num}
+				</if>
+				<if test="searchType != null and searchWord != null">
+					<choose>
+						<when test="searchType == 'user_id'">
+							AND t1.USER_ID LIKE '%' || #{searchWord } || '%'
+						</when>
+						<when test="searchType == 'user_name'">
+							AND t1.USER_NAME  LIKE '%' || #{searchWord } || '%'
+						</when>
+						<when test="searchType == 'user_email'">
+							AND t1.USER_EMAIL  LIKE '%' || #{searchWord } || '%'
+						</when>
+						<when test="searchType == 'user_phone'">
+							AND t1.USER_PHONE  LIKE '%' || #{searchWord } || '%'
+						</when>
+					</choose>
+				</if>
+				ORDER BY t14.ACCEPT_PROPER_NUM  DESC
+			)table1
+		)table2
+		<![CDATA[
+		WHERE table2.rnum >= (#{pageNum}-1)*10+1 and table2.rnum <= #{pageNum}*10
+		]]>
+	</select>
+	
+	<select id="countRegistList" resultType="int">
+		SELECT COUNT(*) 
+		FROM TB_001 t1,TB_005 t5,TB_010 t10,TB_011 t11, TB_014 t14
+		WHERE t1.USER_PROPER_NUM = t5.USER_PROPER_NUM 
+		AND t5.TRIAL_FCLTT_PROPER_NUM = t10.TRIAL_FCLTT_PROPER_NUM
+		AND t5.COURT_PROPER_NUM = t11.COURT_PROPER_NUM 
+		AND t5.APLCN_DTLS_PROPER_NUM = t14.APLCN_DTLS_PROPER_NUM
+		<if test="trial_fcltt_proper_num != 0">
+			AND t14.TRIAL_FCLTT_PROPER_NUM = #{trial_fcltt_proper_num}
+		</if>
+		<if test="court_proper_num != 0">
+			AND t14.COURT_PROPER_NUM = #{court_proper_num}
+		</if>
+		<if test="searchType != null and searchWord != null">
+			<choose>
+				<when test="searchType == 'user_id'">
+					AND t1.USER_ID LIKE '%' || #{searchWord } || '%'
+				</when>
+				<when test="searchType == 'user_name'">
+					AND t1.USER_NAME  LIKE '%' || #{searchWord } || '%'
+				</when>
+				<when test="searchType == 'user_email'">
+					AND t1.USER_EMAIL  LIKE '%' || #{searchWord } || '%'
+				</when>
+				<when test="searchType == 'user_phone'">
+					AND t1.USER_PHONE  LIKE '%' || #{searchWord } || '%'
+				</when>
+			</choose>
+		</if>
+	</select>
+	
+	<!-- 1013 병훈 현황조회 리스트 출력 -->
+	<select id="callConditionList" resultType="map">
+		SELECT table2.* FROM(
+			SELECT table1.*, ROWNUM as rnum FROM(
+				SELECT t1.USER_NAME, t1.USER_PHONE, t1.USER_EMAIL,
+					t2.ANNOUNCE_TITLE, t5.APLCN_DTLS_PROPER_NUM,
+					t5.APLCN_DTLS_DATE, t5.APLCN_DTLS_STS,
+					t10.TRIAL_FCLTT_DESCRIPTION, t11.COURT_NAME
+		 		FROM TB_001 t1, TB_002 t2, TB_005 t5, TB_010 t10, TB_011 t11
+				WHERE t1.USER_PROPER_NUM = t5.USER_PROPER_NUM 
+				AND t5.ANNOUNCE_PROPER_NUM  = t2.ANNOUNCE_PROPER_NUM 
+				AND t5.TRIAL_FCLTT_PROPER_NUM = t10.TRIAL_FCLTT_PROPER_NUM
+				AND t5.COURT_PROPER_NUM = t11.COURT_PROPER_NUM 
+				<if test="announce_proper_num != 0">
+					AND t5.ANNOUNCE_PROPER_NUM = #{announce_proper_num}
+				</if>
+				<if test="trial_fcltt_proper_num != 0">
+					AND t5.TRIAL_FCLTT_PROPER_NUM = #{trial_fcltt_proper_num}
+				</if>
+				<if test="court_proper_num != 0">
+					AND t5.COURT_PROPER_NUM = #{court_proper_num}
+				</if>
+				<if test="aplcn_dtls_sts != '선택'">
+					AND t5.APLCN_DTLS_STS = #{aplcn_dtls_sts}
+				</if>
+				<if test="searchType != null and searchWord != null">
+					<choose>
+						<when test="searchType == 'user_id'">
+							AND t1.USER_ID LIKE '%' || #{searchWord } || '%'
+						</when>
+						<when test="searchType == 'user_name'">
+							AND t1.USER_NAME  LIKE '%' || #{searchWord } || '%'
+						</when>
+						<when test="searchType == 'user_email'">
+							AND t1.USER_EMAIL  LIKE '%' || #{searchWord } || '%'
+						</when>
+						<when test="searchType == 'user_phone'">
+							AND t1.USER_PHONE  LIKE '%' || #{searchWord } || '%'
+						</when>
+					</choose>
+				</if>
+				ORDER BY t5.APLCN_DTLS_PROPER_NUM  DESC
+			)table1
+		)table2
+		<![CDATA[
+		WHERE table2.rnum >= (#{pageNum}-1)*10+1 and table2.rnum <= #{pageNum}*10
+		]]>
+	</select>
+	
+	<select id="countcallConditionList" resultType="int">
+		SELECT COUNT(*) 
+		FROM TB_001 t1, TB_002 t2, TB_005 t5, TB_010 t10, TB_011 t11
+		WHERE t1.USER_PROPER_NUM = t5.USER_PROPER_NUM 
+		AND t5.ANNOUNCE_PROPER_NUM  = t2.ANNOUNCE_PROPER_NUM 
+		AND t5.TRIAL_FCLTT_PROPER_NUM = t10.TRIAL_FCLTT_PROPER_NUM
+		AND t5.COURT_PROPER_NUM = t11.COURT_PROPER_NUM 
+		<if test="announce_proper_num != 0">
+			AND t5.ANNOUNCE_PROPER_NUM = #{announce_proper_num}
+		</if>
+		<if test="trial_fcltt_proper_num != 0">
+			AND t5.TRIAL_FCLTT_PROPER_NUM = #{trial_fcltt_proper_num}
+		</if>
+		<if test="court_proper_num != 0">
+			AND t5.COURT_PROPER_NUM = #{court_proper_num}
+		</if>
+		<if test="aplcn_dtls_sts != '선택'">
+			AND t5.APLCN_DTLS_STS = #{aplcn_dtls_sts}
+		</if>
+		<if test="searchType != null and searchWord != null">
+			<choose>
+				<when test="searchType == 'user_id'">
+					AND t1.USER_ID LIKE '%' || #{searchWord } || '%'
+				</when>
+				<when test="searchType == 'user_name'">
+					AND t1.USER_NAME  LIKE '%' || #{searchWord } || '%'
+				</when>
+				<when test="searchType == 'user_email'">
+					AND t1.USER_EMAIL  LIKE '%' || #{searchWord } || '%'
+				</when>
+				<when test="searchType == 'user_phone'">
+					AND t1.USER_PHONE  LIKE '%' || #{searchWord } || '%'
+				</when>
+			</choose>
+		</if>
+	</select>
+	
+</mapper>
