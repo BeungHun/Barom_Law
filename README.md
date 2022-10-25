@@ -1,9 +1,11 @@
 # (주) 바롬시스템 기업 연계 프로젝트 : 재판조력자 시스템입니다.
 
-[Test User]
-ID : user 
-Pw : user
+[Test User] <br>
+ID : user  <br>
+Pw : user <br>
 
-[Test Admin]
-ID : admin
-PW : admin
+<hr>
+
+[Test Admin] <br>
+ID : admin <br>
+PW : admin <br>
